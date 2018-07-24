@@ -25,10 +25,11 @@ class MainWindow(QWidget, ui_mainwindow.Ui_mainwindow):
         self.tcpSocketThread.start()
 
         self.contentLayout = QHBoxLayout()
-        for i in range(2):
-            widget = SceneWidget()
-            self.tcpSocket.modalChanged.connect(widget.showDevice)
-            self.contentLayout.addWidget(widget)
+        widget = SceneWidgets()
+        self.tcpSocket.modalChanged.connect(widget.showWidgets)
+        self.contentLayout.addWidget(widget)
+
+        self.contentLayout.setContentsMargins(0,0,0,0)
         self.contentFrame.setLayout(self.contentLayout)
 
     def onRtcTimerTimeout(self):

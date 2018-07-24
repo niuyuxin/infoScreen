@@ -4,11 +4,13 @@
 from PyQt5.QtNetwork import *
 from PyQt5.QtCore import *
 from config import *
-
+import collections
+import ast
+import json
 class TcpSocket(QObject):
     Modal = "Modal"
     tcpState=pyqtSignal(int)
-    modalChanged = pyqtSignal(int)
+    modalChanged = pyqtSignal(dict)
     def __init__(self, parent = None):
         super().__init__(parent)
         self.tcpSocket = QTcpSocket()
@@ -42,25 +44,26 @@ class TcpSocket(QObject):
     @pyqtSlot()
     def onTcpSocketReadyRead(self):
         serverData = str(self.tcpSocket.readAll(), encoding="utf-8")
-        print("Get server data:", serverData)
+        # print("Get server data:", serverData)
         if "Hello" in serverData:
             try:
                 di = {"MonitorName":"infoScreen",
-                      "MonitorId":"1",
+                      "MonitorId":Config.value(Config.monitorId),
                       "MonitorHoldDevice":""
                       }
                 self.tcpSocket.write(QByteArray(bytes(str(di), encoding="utf-8")))
                 self.tcpSocket.waitForBytesWritten()
             except Exception as e:
-                print(str(e))
+                print("onTcpSocketReadyRead", str(e))
         else:
             try:
-                serverDataDict = eval(serverData)
-                modal = int(serverDataDict[TcpSocket.Modal])
-                if modal:
-                    self.modalChanged.emit(modal)
+                serverData = serverData.rstrip("\n")
+                for dat in serverData.split("\n"):
+                    dataDict = json.loads(dat, encoding='UTF-8')
+                    if dataDict[TcpSocket.Modal] == "Program":
+                        self.modalChanged.emit(dataDict)
             except Exception as e:
-                print(str(e))
+                print("deal jsonData", str(e))
     def onTcpSocketDisconnected(self):
         print("Tcp socket disconnected")
         self.tcpState.emit(self.tcpSocket.state())

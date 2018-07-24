@@ -17,6 +17,7 @@ if __name__ == "__main__":
                             "Warning",
                             "Maybe you lost style sheet file for this Application",
                             QMessageBox.Ok)
+    Config()
     w = MainWindow()
     w.show()
     sys.exit(app.exec_())
