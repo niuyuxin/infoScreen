@@ -23,7 +23,7 @@ QLabel {
     font: 18pt;
     color: white;
 }
-MainWindow {
+ MainWindow {
     background-color:green;
 }
 QTableWidget

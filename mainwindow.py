@@ -22,10 +22,11 @@ class MainWindow(QWidget, ui_mainwindow.Ui_mainwindow):
         self.tcpSocket = TcpSocket()
         self.tcpSocketThread = QThread()
         self.tcpSocket.moveToThread(self.tcpSocketThread)
+        self.tcpSocketThread.started.connect(self.tcpSocket.initTcpSocket)
         self.tcpSocketThread.start()
 
         self.contentLayout = QHBoxLayout()
-        widget = SceneWidgets()
+        widget = DevWidget()
         self.tcpSocket.modalChanged.connect(widget.showWidgets)
         self.contentLayout.addWidget(widget)
 

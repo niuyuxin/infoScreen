@@ -9,18 +9,23 @@ import ast
 import json
 class TcpSocket(QObject):
     Modal = "Modal"
+    Section = "Section"
     tcpState=pyqtSignal(int)
     modalChanged = pyqtSignal(dict)
-    def __init__(self, parent = None):
+    def __init__(self, parent=None):
         super().__init__(parent)
-        self.tcpSocket = QTcpSocket()
+
+    @pyqtSlot()
+    def initTcpSocket(self):
+        self.tcpSocket = QTcpSocket(self)
         self.tcpSocket.connected.connect(self.onTcpSocketConnected)
         self.tcpSocket.readyRead.connect(self.onTcpSocketReadyRead)
         self.tcpSocket.disconnected.connect(self.onTcpSocketDisconnected)
         self.tcpSocket.error.connect(self.onTcpSocketError)
-        self.connectTimer = QTimer()
-        self.connectTimer.timeout.connect(self.connectServer)
+        self.connectTimer = QTimer(self)
+        self.connectTimer.timeout.connect(self.connectServer, Qt.DirectConnection)
         self.connectTimer.start(1000)
+    @pyqtSlot()
     def onTcpSocketConnected(self):
         print("Tcp socket connected")
         self.tcpState.emit(self.tcpSocket.state())
@@ -31,8 +36,10 @@ class TcpSocket(QObject):
             self.tcpSocket.waitForBytesWritten()
         else:
             print("网络不可用")
-    def connectServer(self, e = 0):
-        if e == 1 or self.tcpSocket.state() == QAbstractSocket.UnconnectedState:
+    @pyqtSlot()
+    def connectServer(self):
+        print("connect to server")
+        if self.tcpSocket.state() == QAbstractSocket.UnconnectedState:
             ip = Config.value(Config.serverIp)
             if ip == None:
                 socketIp = QHostAddress(QHostAddress.LocalHost)  # "192.168.1.177"
@@ -43,40 +50,33 @@ class TcpSocket(QObject):
             self.tcpState.emit(self.tcpSocket.state())
     @pyqtSlot()
     def onTcpSocketReadyRead(self):
-        serverData = str(self.tcpSocket.readAll(), encoding="utf-8")
-        # print("Get server data:", serverData)
-        if "Hello" in serverData:
-            try:
+        try:
+            temp = self.tcpSocket.readAll()
+            serverData = str(temp, encoding="utf-8")
+            # print("Get server data:", temp, QDateTime.currentDateTime().toString("hh:mm:ss zzz"))
+            if "Hello" in serverData:
                 di = {"MonitorName":"infoScreen",
                       "MonitorId":Config.value(Config.monitorId),
                       "MonitorHoldDevice":""
                       }
                 self.tcpSocket.write(QByteArray(bytes(str(di), encoding="utf-8")))
                 self.tcpSocket.waitForBytesWritten()
-            except Exception as e:
-                print("onTcpSocketReadyRead", str(e))
-        else:
-            try:
-                serverData = serverData.rstrip("\n")
+            else:
                 for dat in serverData.split("\n"):
-                    dataDict = json.loads(dat, encoding='UTF-8')
-                    if dataDict[TcpSocket.Modal] == "Program":
+                    if dat:
+                        dataDict = json.loads(dat, encoding='UTF-8')
                         self.modalChanged.emit(dataDict)
-            except Exception as e:
-                print("deal jsonData", str(e))
+        except Exception as e:
+            print("onTcpSocketReadyRead", str(e))
+    @pyqtSlot()
     def onTcpSocketDisconnected(self):
         print("Tcp socket disconnected")
-        self.tcpState.emit(self.tcpSocket.state())
         self.connectTimer.start(1000)
+    @pyqtSlot(QAbstractSocket.SocketError)
     def onTcpSocketError(self, err):
-        self.tcpState.emit(self.tcpSocket.state())
+        print("Tcp Socket error", err)
         self.tcpSocket.close()
         self.connectTimer.start(1000)
-    def onExternOrderToTcpSocket(self, data = None, order = None):
-        if order == 0: # send data
-            self.sendData(data)
-        elif order == 1: # 重启网络
-            self.tcpSocket.disconnectFromHost()
 
 
 
