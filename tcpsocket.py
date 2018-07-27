@@ -11,10 +11,10 @@ class TcpSocket(QObject):
     Modal = "Modal"
     Section = "Section"
     tcpState=pyqtSignal(int)
-    modalChanged = pyqtSignal(dict)
-    def __init__(self, parent=None):
+    modalChanged = pyqtSignal(list)
+    def __init__(self, mid, parent=None):
         super().__init__(parent)
-
+        self.monitorId = mid
     @pyqtSlot()
     def initTcpSocket(self):
         self.tcpSocket = QTcpSocket(self)
@@ -55,7 +55,7 @@ class TcpSocket(QObject):
             # print("Get server data:", temp, QDateTime.currentDateTime().toString("hh:mm:ss zzz"))
             if "Hello" in serverData:
                 di = {"MonitorName":"infoScreen",
-                      "MonitorId":Config.value(Config.monitorId),
+                      "MonitorId":self.monitorId,
                       "MonitorHoldDevice":""
                       }
                 self.tcpSocket.write(QByteArray(bytes(str(di), encoding="utf-8")))

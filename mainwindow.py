@@ -5,11 +5,13 @@ from ui import ui_mainwindow
 from PyQt5.QtCore import *
 from infowidget import *
 from tcpsocket import *
+from config import *
 
 class MainWindow(QWidget, ui_mainwindow.Ui_mainwindow):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setupUi(self)
+        self.setWindowTitle("infoScreen({})".format(Config.value(Config.monitorId)))
         self.rtcTimer = QTimer()
         self.rtcTimer.timeout.connect(self.onRtcTimerTimeout)
         self.rtcTimer.start(1000)
@@ -19,7 +21,7 @@ class MainWindow(QWidget, ui_mainwindow.Ui_mainwindow):
         self.dateTimeLayout.setAlignment(self.dateLabel, Qt.AlignHCenter)
         self.onRtcTimerTimeout()
         # create tcp socket
-        self.tcpSocket = TcpSocket()
+        self.tcpSocket = TcpSocket(mid=Config.value(Config.monitorId))
         self.tcpSocketThread = QThread()
         self.tcpSocket.moveToThread(self.tcpSocketThread)
         self.tcpSocketThread.started.connect(self.tcpSocket.initTcpSocket)

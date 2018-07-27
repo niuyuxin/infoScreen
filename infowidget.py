@@ -26,21 +26,26 @@ class InfoWidget(QWidget):
 
     def showWidgets(self, info):
         try:
-            if info[TcpSocket.Modal] == "Program":
-                for sw in self.singleWidgetList:
-                    sw.hide()
-                for sw in self.sceneWidgetList:
-                    sw.show()
-                sw = self.sceneWidgetList[int(info[TcpSocket.Section])%len(self.sceneWidgetList)]
-                if sw:
-                    sw.showDevice(info)
-            elif info[TcpSocket.Modal] == "Single":
-                for sw in self.singleWidgetList:
-                    sw.show()
-                for sw in self.sceneWidgetList:
-                    sw.hide()
-                sec = int(info[TcpSocket.Section])%len(self.singleWidgetList)
-                self.singleWidgetList[sec].showDevice(info["Device"])
+            if len(info) == 4 and info[0] == 2 and info[2] == "value":
+                infoValue = info[3]
+                if infoValue[TcpSocket.Modal] == "Program":
+                    sw = self.sceneWidgetList[int(infoValue[TcpSocket.Section])%len(self.sceneWidgetList)]
+                    if sw:
+                        sw.showDevice(infoValue)
+                elif infoValue[TcpSocket.Modal] == "Single":
+                    sec = int(infoValue[TcpSocket.Section])%len(self.singleWidgetList)
+                    self.singleWidgetList[sec].showDevice(infoValue)
+            elif len(info) == 4 and info[0] == 2 and info[2] == "setScreen":
+                if not info[3]: # single
+                    for sw in self.singleWidgetList:
+                        sw.show()
+                    for sw in self.sceneWidgetList:
+                        sw.hide()
+                else:           # program
+                    for sw in self.singleWidgetList:
+                        sw.hide()
+                    for sw in self.sceneWidgetList:
+                        sw.show()
         except Exception as e:
             print("showWidgets", e)
 class SingleWidget(QWidget):
@@ -61,10 +66,12 @@ class SingleWidget(QWidget):
         self.mainLayout.setContentsMargins(0,0,0,0)
         self.setLayout(self.mainLayout)
 
-    def showDevice(self, dev):
+    def showDevice(self, info):
+        devList = info["Device"]
         try:
-            devList = dev
-            devWidgetNum = len(devList)//10 + 1
+            while len(devList) < SingleWidget.MaxRow or len(devList)%SingleWidget.MaxRow:
+                devList.append(["",""])
+            devWidgetNum = len(devList)//(SingleWidget.MaxRow+1) + 1
             while self.devWidgetLayout.count() > devWidgetNum:
                 w = self.devWidgetLayout.takeAt(0).widget()
                 w.setParent(None)
@@ -140,11 +147,11 @@ class SceneWidget(QWidget):
         if info["PlayName"]:
             self.titleLabel.setText("{}:({})".format(sceneName, info["PlayName"]))
         else:
-            self.titleLabel.setText("")
+            self.titleLabel.setText(self.tr("无编场信息"))
         devList = []
         if info["Device"]:
             devList = info["Device"]
-        while len(devList) < SingleWidget.MaxRow:
+        while len(devList) < SceneWidget.MaxRow or len(devList)%SceneWidget.MaxRow:
             devList.append(["", "", "", None, None])
         try:
             devWidgetNum = len(devList)//(SceneWidget.MaxRow+1) + 1
