@@ -3,7 +3,7 @@
 from PyQt5.QtWidgets import *
 from ui import ui_mainwindow
 from PyQt5.QtCore import *
-from scenewidget import *
+from infowidget import *
 from tcpsocket import *
 
 class MainWindow(QWidget, ui_mainwindow.Ui_mainwindow):
@@ -26,7 +26,7 @@ class MainWindow(QWidget, ui_mainwindow.Ui_mainwindow):
         self.tcpSocketThread.start()
 
         self.contentLayout = QHBoxLayout()
-        widget = DevWidget()
+        widget = InfoWidget()
         self.tcpSocket.modalChanged.connect(widget.showWidgets)
         self.contentLayout.addWidget(widget)
 

@@ -19,6 +19,7 @@ if __name__ == "__main__":
                             QMessageBox.Ok)
     Config()
     w = MainWindow()
+    # w.setWindowFlags(Qt.FramelessWindowHint)
     w.show()
     sys.exit(app.exec_())
 

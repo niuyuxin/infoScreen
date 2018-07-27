@@ -4,8 +4,8 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import  *
 from tcpsocket import *
 
-class DevWidget(QWidget):
-    def __init__(self, number=2, parent=None):
+class InfoWidget(QWidget):
+    def __init__(self, number=2, parent=None):# program and single modal just 2 sections to show info
         super().__init__(parent)
         self.sceneWidgetList = []
         self.singleWidgetList = []
@@ -16,6 +16,7 @@ class DevWidget(QWidget):
             sw = SceneWidget()
             self.layout.addWidget(sw)
             self.sceneWidgetList.append(sw)
+            sw.hide()
         for i in range(number):
             id = int(Config.value(Config.monitorId))
             sw = SingleWidget("{}区".format((id%2)*2+1+i))
@@ -30,17 +31,15 @@ class DevWidget(QWidget):
                     sw.hide()
                 for sw in self.sceneWidgetList:
                     sw.show()
-                sw = self.sceneWidgetList[self.sceneWidgetCount]
+                sw = self.sceneWidgetList[int(info[TcpSocket.Section])%len(self.sceneWidgetList)]
                 if sw:
                     sw.showDevice(info)
-                self.sceneWidgetCount += 1
-                self.sceneWidgetCount %= len(self.sceneWidgetList)
             elif info[TcpSocket.Modal] == "Single":
                 for sw in self.singleWidgetList:
                     sw.show()
                 for sw in self.sceneWidgetList:
                     sw.hide()
-                sec = int(info[TcpSocket.Section])%2
+                sec = int(info[TcpSocket.Section])%len(self.singleWidgetList)
                 self.singleWidgetList[sec].showDevice(info["Device"])
         except Exception as e:
             print("showWidgets", e)
@@ -80,11 +79,15 @@ class SingleWidget(QWidget):
                 if w.item(row, 0):
                     w.item(row, 0).setText(dev[0])
                 else:
-                    w.setItem(row, 0, QTableWidgetItem(dev[0]))
+                    item = QTableWidgetItem(dev[0])
+                    item.setTextAlignment(Qt.AlignHCenter)
+                    w.setItem(row, 0, item)
                 if w.item(row, 1):
                     w.item(row, 1).setText(str(dev[1]))
                 else:
-                    w.setItem(row, 1, QTableWidgetItem(str(dev[1])))
+                    item = QTableWidgetItem(str(dev[1]))
+                    item.setTextAlignment(Qt.AlignHCenter)
+                    w.setItem(row, 1, item)
                 count += 1
         except Exception as e:
             print(str(e))
@@ -99,6 +102,7 @@ class SingleWidget(QWidget):
         devWidget.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         devWidget.setHorizontalHeaderLabels(hHeaderLabels)
         devWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        devWidget.verticalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
         devWidget.setEditTriggers(QAbstractItemView.NoEditTriggers)
         return devWidget
 class SceneWidget(QWidget):
@@ -113,6 +117,7 @@ class SceneWidget(QWidget):
         self.mainLayout.addWidget(self.titleLabel, alignment=Qt.AlignHCenter)
         self.mainLayout.addLayout(self.devTableWidgetLayout)
         self.mainLayout.setContentsMargins(0,0,0,0)
+        self.mainLayout.setSpacing(0)
         self.setLayout(self.mainLayout)
         # while True:
         #     self.showDevice(info=None)
@@ -136,12 +141,14 @@ class SceneWidget(QWidget):
             self.titleLabel.setText("{}:({})".format(sceneName, info["PlayName"]))
         else:
             self.titleLabel.setText("")
-        if not info["Device"]:
-            return
-        devList = info["Device"]
+        devList = []
+        if info["Device"]:
+            devList = info["Device"]
+        while len(devList) < SingleWidget.MaxRow:
+            devList.append(["", "", "", None, None])
         try:
-            devWidgetNum = len(devList)//SceneWidget.MaxRow + 1
-            while self.devTableWidgetLayout.count() > devWidgetNum:
+            devWidgetNum = len(devList)//(SceneWidget.MaxRow+1) + 1
+            while self.devTableWidgetLayout.count() > devWidgetNum: # create table Widget according devList
                 w = self.devTableWidgetLayout.takeAt(0).widget()
                 w.setParent(None)
                 del w
@@ -150,16 +157,24 @@ class SceneWidget(QWidget):
                 self.devTableWidgetLayout.addWidget(devWidget)
             count = 0
             for dev in devList:
-                w = self.devTableWidgetLayout.itemAt(count//SingleWidget.MaxRow).widget()
+                w = self.devTableWidgetLayout.itemAt(count//SceneWidget.MaxRow).widget()
                 row = count % SingleWidget.MaxRow
                 w.item(row, 0).setText(str(dev[0]))
                 w.item(row, 1).setText(str(dev[1]))
                 w.item(row, 2).setText(str(dev[2]))
-                w.cellWidget(row, 3).layout().itemAt(0).widget().setVisible(True)
-                w.cellWidget(row, 4).layout().itemAt(0).widget().setVisible(True)
+                if dev[3] != None:
+                    w.cellWidget(row, 3).layout().itemAt(0).widget().setVisible(True)
+                    w.cellWidget(row, 3).layout().itemAt(0).widget().setChecked(dev[3])
+                else:
+                    w.cellWidget(row, 3).layout().itemAt(0).widget().setVisible(False)
+                if dev[4] != None:
+                    w.cellWidget(row, 4).layout().itemAt(0).widget().setVisible(True)
+                    w.cellWidget(row, 4).layout().itemAt(0).widget().setChecked(dev[4])
+                else:
+                    w.cellWidget(row, 4).layout().itemAt(0).widget().setVisible(False)
                 count += 1
         except Exception as e:
-            print(str(e))
+            print("SceneWidget show device", str(e))
 
     def createTableWidget(self):
         deviceTableWidget = QTableWidget()

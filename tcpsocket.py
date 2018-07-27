@@ -38,7 +38,6 @@ class TcpSocket(QObject):
             print("网络不可用")
     @pyqtSlot()
     def connectServer(self):
-        print("connect to server")
         if self.tcpSocket.state() == QAbstractSocket.UnconnectedState:
             ip = Config.value(Config.serverIp)
             if ip == None:
@@ -74,7 +73,7 @@ class TcpSocket(QObject):
         self.connectTimer.start(1000)
     @pyqtSlot(QAbstractSocket.SocketError)
     def onTcpSocketError(self, err):
-        print("Tcp Socket error", err)
+        # print("Tcp Socket error", err)
         self.tcpSocket.close()
         self.connectTimer.start(1000)
 

@@ -13,6 +13,8 @@ class Ui_mainwindow(object):
         mainwindow.setObjectName("mainwindow")
         mainwindow.resize(669, 259)
         self.horizontalLayout = QtWidgets.QHBoxLayout(mainwindow)
+        self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
+        self.horizontalLayout.setSpacing(0)
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.frame = QtWidgets.QFrame(mainwindow)
         self.frame.setLayoutDirection(QtCore.Qt.RightToLeft)
