@@ -7,9 +7,20 @@ from config import *
 import collections
 import ast
 import json
+
 class TcpSocket(QObject):
     Modal = "Modal"
     Section = "Section"
+    Call = 2
+    CallResult = 3
+    CallError = 4
+    SelectedDevice = "SelectedDevice"
+    MonitorId = "MonitorId"
+    MonitorDevice = "MonitorDevice"
+    MonitorDeviceCount = "MonitorDeviceCount"
+    MonitorName = "MonitorName"
+    BootNotification = "BootNotification"
+    UpdateDevice = "UpdateDevice"
     tcpState=pyqtSignal(int)
     modalChanged = pyqtSignal(list)
     def __init__(self, mid, parent=None):
@@ -18,6 +29,7 @@ class TcpSocket(QObject):
     @pyqtSlot()
     def initTcpSocket(self):
         self.tcpSocket = QTcpSocket(self)
+        self.sendCount = 0
         self.tcpSocket.connected.connect(self.onTcpSocketConnected)
         self.tcpSocket.readyRead.connect(self.onTcpSocketReadyRead)
         self.tcpSocket.disconnected.connect(self.onTcpSocketDisconnected)
@@ -54,15 +66,17 @@ class TcpSocket(QObject):
             serverData = str(temp, encoding="utf-8")
             # print("Get server data:", temp, QDateTime.currentDateTime().toString("hh:mm:ss zzz"))
             if "Hello" in serverData:
-                di = {"MonitorName":"infoScreen",
-                      "MonitorId":self.monitorId,
-                      "MonitorHoldDevice":""
+                di = {TcpSocket.MonitorName:Config.value(Config.monitorName),
+                      TcpSocket.MonitorId:self.monitorId,
+                      TcpSocket.MonitorDeviceCount: 0
                       }
-                self.tcpSocket.write(QByteArray(bytes(str(di), encoding="utf-8")))
+                message = [TcpSocket.Call, self.createUnionId(TcpSocket.BootNotification), TcpSocket.BootNotification, di]
+                self.tcpSocket.write(bytes(json.dumps(message, ensure_ascii='UTF-8'), encoding='utf-8')+b'\0')
                 self.tcpSocket.waitForBytesWritten()
             else:
-                for dat in serverData.split("\n"):
+                for dat in serverData.split('\0'):
                     if dat:
+                        print(dat)
                         dataDict = json.loads(dat, encoding='UTF-8')
                         self.modalChanged.emit(dataDict)
         except Exception as e:
@@ -76,6 +90,9 @@ class TcpSocket(QObject):
         # print("Tcp Socket error", err)
         self.tcpSocket.close()
         self.connectTimer.start(1000)
-
+    def createUnionId(self, type):
+        time = QDateTime.currentDateTime().toString("yyMMddhhmmsszzz")
+        self.sendCount += 1
+        return time + '-' + str(self.sendCount)
 
 
