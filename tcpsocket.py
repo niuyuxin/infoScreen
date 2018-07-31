@@ -88,7 +88,7 @@ class TcpSocket(QObject):
     @pyqtSlot(QAbstractSocket.SocketError)
     def onTcpSocketError(self, err):
         # print("Tcp Socket error", err)
-        self.tcpSocket.close()
+        self.tcpSocket.disconnectFromHost()
         self.connectTimer.start(1000)
     def createUnionId(self, type):
         time = QDateTime.currentDateTime().toString("yyMMddhhmmsszzz")
