@@ -5,21 +5,22 @@ from PyQt5.QtCore import  *
 from tcpsocket import *
 
 class InfoWidget(QWidget):
-    def __init__(self, number=2, parent=None):# program and single modal just 2 sections to show info
+    def __init__(self, begin = 0, end = 2, parent=None):# program and single modal just 2 sections to show info
         super().__init__(parent)
+        self.begin = begin
+        self.end = end
         self.sceneWidgetList = []
         self.singleWidgetList = []
         self.sceneWidgetCount = 0
         self.layout=QHBoxLayout()
         self.layout.setContentsMargins(0,0,0,0)
-        for i in range(number):
+        for i in range(begin, end):
             sw = SceneWidget()
             self.layout.addWidget(sw)
             self.sceneWidgetList.append(sw)
             sw.hide()
-        for i in range(number):
-            id = int(Config.value(Config.monitorId))
-            sw = SingleWidget("{}区".format((id%2)*2+1+i))
+        for i in range(begin, end):
+            sw = SingleWidget("{}区".format(i+1))
             self.layout.addWidget(sw)
             self.singleWidgetList.append(sw)
         self.setLayout(self.layout)
@@ -28,6 +29,8 @@ class InfoWidget(QWidget):
         try:
             if len(info) == 4 and info[0] == 2 and info[2] == "value":
                 infoValue = info[3]
+                if int(infoValue[TcpSocket.Section]) not in range(self.begin, self.end):
+                    return
                 if infoValue[TcpSocket.Modal] == "Program":
                     sw = self.sceneWidgetList[int(infoValue[TcpSocket.Section])%len(self.sceneWidgetList)]
                     if sw:

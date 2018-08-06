@@ -23,9 +23,10 @@ QLabel {
     font: 18pt;
     color: white;
 }
- MainWindow {
+ SubWindow {
     background-color:green;
 }
+
 QTableWidget
 {
 	background-color:rgba(97%,80%,9%,50%);

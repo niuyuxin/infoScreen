@@ -22,7 +22,7 @@ class TcpSocket(QObject):
     BootNotification = "BootNotification"
     UpdateDevice = "UpdateDevice"
     tcpState=pyqtSignal(int)
-    modalChanged = pyqtSignal(list)
+    receivedData = pyqtSignal(list)
     def __init__(self, mid, parent=None):
         super().__init__(parent)
         self.monitorId = mid
@@ -78,7 +78,7 @@ class TcpSocket(QObject):
                     if dat:
                         print(dat)
                         dataDict = json.loads(dat, encoding='UTF-8')
-                        self.modalChanged.emit(dataDict)
+                        self.receivedData.emit(dataDict)
         except Exception as e:
             print("onTcpSocketReadyRead", str(e))
     @pyqtSlot()

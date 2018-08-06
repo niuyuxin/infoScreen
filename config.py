@@ -4,7 +4,7 @@
 from PyQt5.QtCore import *
 import re
 class Config(object):
-    version = "18.07.08.1"
+    version = "18.07.08.2"
     SettingsName = "infoScreen.ini"
     serverIp = "ServerIp"
     monitorName = "MonitorName"
@@ -16,6 +16,7 @@ class Config(object):
             set.clear()
             set.setValue("Version", Config.version)
             set.setValue(Config.monitorName, "infoScreen")
+            set.setValue(Config.serverIp, "127.0.0.1")
             set.setValue(Config.monitorId, 1)
             set.sync()
     @staticmethod
