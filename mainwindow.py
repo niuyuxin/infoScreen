@@ -11,15 +11,20 @@ class MainWindow(QObject):
     def __init__(self, parent=None):
         super().__init__(parent)
         # create tcp socket
-        self.subWindow1 = SubWindow(0, 2)
-        self.subWindow2 = SubWindow(2, 4)
-        self.subWindow2.move(0, 480)
+        self.subWindowList = []
+        sectionSize = int(Config.value(Config.SectionSize))
+        for s in range(sectionSize):
+            subWindow = SubWindow(s*2, s*2+2)
+            self.subWindowList.append(subWindow)
         self.tcpSocket = TcpSocket(mid=Config.value(Config.monitorId))
         self.tcpSocketThread = QThread()
         self.tcpSocket.moveToThread(self.tcpSocketThread)
         self.tcpSocketThread.started.connect(self.tcpSocket.initTcpSocket)
-        self.tcpSocket.receivedData.connect(self.subWindow1.receivedData)
-        self.tcpSocket.receivedData.connect(self.subWindow2.receivedData)
+        count = 0
+        for window in self.subWindowList:
+            window.move(0, 360*count)
+            count += 1
+            self.tcpSocket.receivedData.connect(window.receivedData)
         self.tcpSocketThread.start()
 
 class SubWindow(QWidget, ui_mainwindow.Ui_mainwindow):

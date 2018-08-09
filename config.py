@@ -4,11 +4,12 @@
 from PyQt5.QtCore import *
 import re
 class Config(object):
-    version = "18.07.08.2"
+    version = "18.07.08.3"
     SettingsName = "infoScreen.ini"
     serverIp = "ServerIp"
     monitorName = "MonitorName"
     monitorId = "MonitorId"
+    SectionSize = "SectionSize"
     def __init__(self):
         set = QSettings(Config.SettingsName, QSettings.IniFormat)
         set.setIniCodec(QTextCodec.codecForName("UTF-8"));
@@ -18,6 +19,7 @@ class Config(object):
             set.setValue(Config.monitorName, "infoScreen")
             set.setValue(Config.serverIp, "127.0.0.1")
             set.setValue(Config.monitorId, 1)
+            set.setValue(Config.SectionSize, 1)
             set.sync()
     @staticmethod
     def value(key):
