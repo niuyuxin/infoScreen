@@ -17,7 +17,7 @@ class TcpSocket(QObject):
     SelectedDevice = "SelectedDevice"
     MonitorId = "MonitorId"
     MonitorDevice = "MonitorDevice"
-    MonitorDeviceCount = "MonitorDeviceCount"
+    MonitorSectionSize = "MonitorSectionSize"
     MonitorName = "MonitorName"
     BootNotification = "BootNotification"
     UpdateDevice = "UpdateDevice"
@@ -68,7 +68,7 @@ class TcpSocket(QObject):
             if "Hello" in serverData:
                 di = {TcpSocket.MonitorName:Config.value(Config.monitorName),
                       TcpSocket.MonitorId:self.monitorId,
-                      TcpSocket.MonitorDeviceCount: 0
+                      TcpSocket.MonitorSectionSize: int(Config.value(Config.SectionSize))
                       }
                 message = [TcpSocket.Call, self.createUnionId(TcpSocket.BootNotification), TcpSocket.BootNotification, di]
                 self.tcpSocket.write(bytes(json.dumps(message, ensure_ascii='UTF-8'), encoding='utf-8')+b'\0')

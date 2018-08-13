@@ -18,7 +18,7 @@ class Config(object):
             set.setValue("Version", Config.version)
             set.setValue(Config.monitorName, "infoScreen")
             set.setValue(Config.serverIp, "127.0.0.1")
-            set.setValue(Config.monitorId, 1)
+            set.setValue(Config.monitorId, 0)
             set.setValue(Config.SectionSize, 1)
             set.sync()
     @staticmethod
