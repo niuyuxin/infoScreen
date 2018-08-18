@@ -51,7 +51,7 @@ class InfoWidget(QWidget):
                         sw.show()
         except Exception as e:
             print("showWidgets", e)
-class SingleWidget(QWidget):
+class SingleWidget(QFrame):
     MaxRow = 10
     def __init__(self, name, parent=None):
         super().__init__(parent)
@@ -66,7 +66,7 @@ class SingleWidget(QWidget):
         self.mainLayout = QVBoxLayout()
         self.mainLayout.addWidget(self.titleLabel)
         self.mainLayout.addLayout(self.devWidgetLayout)
-        self.mainLayout.setContentsMargins(0,0,0,0)
+        self.mainLayout.setContentsMargins(5,5,5,5)
         self.setLayout(self.mainLayout)
 
     def showDevice(self, info):
@@ -104,6 +104,8 @@ class SingleWidget(QWidget):
     def createTableWidget(self):
         hHeaderLabels = ["设备名称", "状态"]
         devWidget = QTableWidget()
+        devWidget.setSelectionMode(QAbstractItemView.NoSelection)
+        devWidget.setFocusPolicy(Qt.NoFocus)
         devWidget.setShowGrid(False)
         devWidget.verticalHeader().setHidden(True)
         devWidget.setColumnCount(len(hHeaderLabels))
@@ -115,7 +117,7 @@ class SingleWidget(QWidget):
         devWidget.verticalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
         devWidget.setEditTriggers(QAbstractItemView.NoEditTriggers)
         return devWidget
-class SceneWidget(QWidget):
+class SceneWidget(QFrame):
     MaxRow = 10
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -126,7 +128,7 @@ class SceneWidget(QWidget):
         self.mainLayout = QVBoxLayout()
         self.mainLayout.addWidget(self.titleLabel, alignment=Qt.AlignHCenter)
         self.mainLayout.addLayout(self.devTableWidgetLayout)
-        self.mainLayout.setContentsMargins(0,0,0,0)
+        self.mainLayout.setContentsMargins(5,5,5,5)
         self.mainLayout.setSpacing(0)
         self.setLayout(self.mainLayout)
         # while True:
@@ -188,6 +190,8 @@ class SceneWidget(QWidget):
 
     def createTableWidget(self):
         deviceTableWidget = QTableWidget()
+        deviceTableWidget.setSelectionMode(QAbstractItemView.NoSelection)
+        deviceTableWidget.setFocusPolicy(Qt.NoFocus)
         hHeaderLabels = ["设备名称", "位置", "速度", "上限", "下限"]
         deviceTableWidget.setColumnCount(len(hHeaderLabels))
         deviceTableWidget.setHorizontalHeaderLabels(hHeaderLabels)

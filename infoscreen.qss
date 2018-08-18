@@ -1,35 +1,36 @@
 
-
-QPushButton { /* kjk */
-    font-size: 15px;
-    font-weight: bold;
-    font-family: "Snell Roundhand";
-    color: blue;
-
-    border-width: 5px;
-    /* border-color: gray; */
-    /* border-style: solid; */
-    /* border-radius: 10px; */
+SubWindow {
+    background-color:#0b0e19;
 }
-
-QPushButton:hover{ background-color: white }
-
-DeviceInfo{background-color: white}
-
-QLabel#inverterPicLabel {
-    border-image:url(:/images/images/inverter.png);
+SingleWidget, SceneWidget{
+    background-color: #0f1327
 }
-QLabel {
-    font: 18pt;
-    color: white;
+QHeaderView::section{
+    background: #2a2048;
+    color: rgb(240, 240, 240);
+    padding-left: 4px;
+    border: 1px solid #2a2048;
+    alternate-background-color:rgb(48,51,55);
+    height: 40px;
+    font-size: 18px;
 }
- SubWindow {
-    background-color:green;
-}
-
 QTableWidget
 {
-	background-color:rgba(97%,80%,9%,50%);
+	background-color: #1b1d34;
 	padding-left: 4px;
-	border: 1px solid #6c6c6c
+	border: 1px solid #6c6c6c;
+	color: white
+}
+QLabel#logoLabel{
+    max-width: 176px;
+    max-height: 33px;
+    border-image: url(:/images/logo.png);
+}
+QLabel {
+    font: 20pt;
+    color: white;
+}
+QLabel#timeLabel{
+    font:35pt;
+    font-weight: bold
 }

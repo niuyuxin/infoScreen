@@ -78,7 +78,11 @@ class TcpSocket(QObject):
                     if dat:
                         print(dat)
                         dataDict = json.loads(dat, encoding='UTF-8')
-                        self.receivedData.emit(dataDict)
+                        if len(dataDict) == 4 and dataDict[0] == TcpSocket.Call:
+                            self.receivedData.emit(dataDict)
+                        elif len(dataDict) == 4 and dataDict[0] == TcpSocket.CallResult:
+                            if isinstance(dataDict[3], dict) and "time" in dataDict[3].keys():
+                                self.updateSystemTime(dataDict[3]["time"])
         except Exception as e:
             print("onTcpSocketReadyRead", str(e))
     @pyqtSlot()
@@ -94,5 +98,19 @@ class TcpSocket(QObject):
         time = QDateTime.currentDateTime().toString("yyMMddhhmmsszzz")
         self.sendCount += 1
         return time + '-' + str(self.sendCount)
+    def updateSystemTime(self, dateTimeStr):
+        import win32api
+        dateTime = QDateTime.fromString(dateTimeStr,"yyyy-MM-dd hh:mm:ss")
+        date = QDate(dateTime.date())
+        time = QTime(dateTime.time())
+        win32api.SetSystemTime(date.year(),
+                                  date.month(),
+                                  date.day(),
+                                  date.dayOfWeek(),
+                                  time.hour(),
+                                  time.minute(),
+                                  time.second(),
+                                  0)
+
 
 
