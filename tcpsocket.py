@@ -101,16 +101,17 @@ class TcpSocket(QObject):
     def updateSystemTime(self, dateTimeStr):
         import win32api
         dateTime = QDateTime.fromString(dateTimeStr,"yyyy-MM-dd hh:mm:ss")
-        date = QDate(dateTime.date())
-        time = QTime(dateTime.time())
+        dateTimeUtc = dateTime.toUTC()
+        date = QDate(dateTimeUtc.date())
+        time = QTime(dateTimeUtc.time())
         win32api.SetSystemTime(date.year(),
-                                  date.month(),
-                                  date.day(),
-                                  date.dayOfWeek(),
-                                  time.hour(),
-                                  time.minute(),
-                                  time.second(),
-                                  0)
+                                date.month(),
+                                date.dayOfWeek(),
+                                date.day(),
+                                time.hour(),
+                                time.minute(),
+                                time.second(),
+                                0)
 
 
 
