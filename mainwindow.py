@@ -49,7 +49,7 @@ class SubWindow(QWidget, ui_mainwindow.Ui_mainwindow):
         self.contentLayout.addWidget(widget)
         self.contentLayout.setContentsMargins(0,0,0,0)
         self.contentFrame.setLayout(self.contentLayout)
-        self.showFullScreen()
+        self.show()
 
     def onRtcTimerTimeout(self):
         dtStr = QDateTime.currentDateTime().toString("yyyy年MM月dd日 hh:mm:ss dddd")

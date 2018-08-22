@@ -22,6 +22,7 @@ class Ui_mainwindow(object):
         self.frame.setFrameShadow(QtWidgets.QFrame.Raised)
         self.frame.setObjectName("frame")
         self.dateTimeLayout = QtWidgets.QVBoxLayout(self.frame)
+        self.dateTimeLayout.setContentsMargins(-1, -1, -1, 30)
         self.dateTimeLayout.setObjectName("dateTimeLayout")
         self.timeLabel = QtWidgets.QLabel(self.frame)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Preferred)
