@@ -22,7 +22,8 @@ class MainWindow(QObject):
         self.tcpSocketThread.started.connect(self.tcpSocket.initTcpSocket)
         count = 0
         for window in self.subWindowList:
-            window.move(0, 360*count)
+            if count == 1:
+                window.move(1920+1280, 0)
             count += 1
             self.tcpSocket.receivedData.connect(window.receivedData)
         self.tcpSocketThread.start()
@@ -32,6 +33,7 @@ class SubWindow(QWidget, ui_mainwindow.Ui_mainwindow):
     def __init__(self, begin=0, end=2, parent=None):
         super().__init__(parent)
         self.setupUi(self)
+        self.setCursor(Qt.BlankCursor)
         self.setWindowTitle("infoScreen({}-{})".format(begin+1, end))
         self.rtcTimer = QTimer(self)
         self.rtcTimer.timeout.connect(self.onRtcTimerTimeout)
@@ -47,7 +49,7 @@ class SubWindow(QWidget, ui_mainwindow.Ui_mainwindow):
         self.contentLayout.addWidget(widget)
         self.contentLayout.setContentsMargins(0,0,0,0)
         self.contentFrame.setLayout(self.contentLayout)
-        self.show()
+        self.showFullScreen()
 
     def onRtcTimerTimeout(self):
         dtStr = QDateTime.currentDateTime().toString("yyyy年MM月dd日 hh:mm:ss dddd")

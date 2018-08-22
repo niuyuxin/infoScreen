@@ -52,7 +52,7 @@ class InfoWidget(QWidget):
         except Exception as e:
             print("showWidgets", e)
 class SingleWidget(QFrame):
-    MaxRow = 10
+    MaxRow = 9
     def __init__(self, name, parent=None):
         super().__init__(parent)
         self.titleLabel = QLabel(name)
@@ -102,7 +102,7 @@ class SingleWidget(QFrame):
         except Exception as e:
             print(str(e))
     def createTableWidget(self):
-        hHeaderLabels = ["设备名称", "状态"]
+        hHeaderLabels = ["名称", "状态"]
         devWidget = QTableWidget()
         devWidget.setSelectionMode(QAbstractItemView.NoSelection)
         devWidget.setFocusPolicy(Qt.NoFocus)
@@ -114,11 +114,11 @@ class SingleWidget(QFrame):
         devWidget.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         devWidget.setHorizontalHeaderLabels(hHeaderLabels)
         devWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-        devWidget.verticalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
+        # devWidget.verticalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
         devWidget.setEditTriggers(QAbstractItemView.NoEditTriggers)
         return devWidget
 class SceneWidget(QFrame):
-    MaxRow = 10
+    MaxRow = 9
     def __init__(self, parent=None):
         super().__init__(parent)
         self.titleLabel = QLabel()
@@ -192,12 +192,12 @@ class SceneWidget(QFrame):
         deviceTableWidget = QTableWidget()
         deviceTableWidget.setSelectionMode(QAbstractItemView.NoSelection)
         deviceTableWidget.setFocusPolicy(Qt.NoFocus)
-        hHeaderLabels = ["设备名称", "位置", "速度", "上限", "下限"]
+        hHeaderLabels = ["名称", "位置", "速度", "上限", "下限"]
         deviceTableWidget.setColumnCount(len(hHeaderLabels))
         deviceTableWidget.setHorizontalHeaderLabels(hHeaderLabels)
         deviceTableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         deviceTableWidget.verticalHeader().setHidden(True)
-        deviceTableWidget.verticalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
+        # deviceTableWidget.verticalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
         deviceTableWidget.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         deviceTableWidget.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         # self.deviceTableWidget.verticalHeader().setDefaultSectionSize()
@@ -206,13 +206,13 @@ class SceneWidget(QFrame):
         deviceTableWidget.setRowCount(SceneWidget.MaxRow)
         for row in range(SceneWidget.MaxRow):  # name pos speed uplimit downlimit
             devNameItem = QTableWidgetItem()
-            devNameItem.setTextAlignment(Qt.AlignHCenter)
+            devNameItem.setTextAlignment(Qt.AlignVCenter|Qt.AlignHCenter)
             deviceTableWidget.setItem(row, 0, devNameItem)
             posItem = QTableWidgetItem()
-            posItem.setTextAlignment(Qt.AlignHCenter)
+            posItem.setTextAlignment(Qt.AlignVCenter|Qt.AlignHCenter)
             deviceTableWidget.setItem(row, 1, posItem)
             speedItem = QTableWidgetItem()
-            speedItem.setTextAlignment(Qt.AlignHCenter)
+            speedItem.setTextAlignment(Qt.AlignVCenter|Qt.AlignHCenter)
             deviceTableWidget.setItem(row, 2, speedItem)
             upRadioButton = QRadioButton()
             upRadioButton.setChecked(0)
